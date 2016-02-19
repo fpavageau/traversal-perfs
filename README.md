@@ -67,34 +67,106 @@ The times are in milliseconds.
 
 <table>
   <tr>
-    <th></th>
-    <th>Neo4j Enterprise 2.2.7</th>
-    <th>Neo4j Enterprise 2.3.2</th>
+    <th>Version</th>
+    <th colspan="6">Neo4j Enterprise 2.2.7</th>
+    <th colspan="6">Neo4j Enterprise 2.3.2</th>
+  </tr>
+  <tr>
+    <th>Traversal mode</th>
+    <th colspan="3">Breadth-First</th>
+    <th colspan="3">Depth-First</th>
+    <th colspan="3">Breadth-First</th>
+    <th colspan="3">Depth-First</th>
+  </tr>
+  <tr>
+    <th>Heap in MB</th>
+    <th>1024</th>
+    <th>2048</th>
+    <th>4096</th>
+    <th>1024</th>
+    <th>2048</th>
+    <th>4096</th>
+    <th>1024</th>
+    <th>2048</th>
+    <th>4096</th>
+    <th>1024</th>
+    <th>2048</th>
+    <th>4096</th>
   </tr>
   <tr>
     <td>Mean</td>
-    <td>1914</td>
-    <td>3109</td>
+    <td>6616</td>
+    <td>3441</td>
+    <td>2045</td>
+    <td>2229</td>
+    <td>2209</td>
+    <td>1276</td>
+    <td>2771</td>
+    <td>2500</td>
+    <td>2465</td>
+    <td>1544</td>
+    <td>1543</td>
+    <td>1540</td>
   </tr>
   <tr>
     <td>50%</td>
-    <td>1890</td>
-    <td>3088</td>
+    <td>6308</td>
+    <td>3281</td>
+    <td>2022</td>
+    <td>2228</td>
+    <td>2208</td>
+    <td>1277</td>
+    <td>2748</td>
+    <td>2487</td>
+    <td>2443</td>
+    <td>1549</td>
+    <td>1517</td>
+    <td>1547</td>
   </tr>
   <tr>
     <td>90%</td>
-    <td>2169</td>
-    <td>3358</td>
+    <td>8520</td>
+    <td>3823</td>
+    <td>2296</td>
+    <td>2406</td>
+    <td>2415</td>
+    <td>1391</td>
+    <td>2981</td>
+    <td>2672</td>
+    <td>2674</td>
+    <td>1679</td>
+    <td>1690</td>
+    <td>1693</td>
   </tr>
   <tr>
     <td>95%</td>
-    <td>2254</td>
-    <td>3470</td>
+    <td>8820</td>
+    <td>5268</td>
+    <td>2353</td>
+    <td>2454</td>
+    <td>2488</td>
+    <td>1424</td>
+    <td>3145</td>
+    <td>2773</td>
+    <td>2709</td>
+    <td>1711</td>
+    <td>1727</td>
+    <td>1716</td>
   </tr>
   <tr>
     <td>Max</td>
-    <td>2322</td>
-    <td>3707</td>
+    <td>10591</td>
+    <td>5807</td>
+    <td>2856</td>
+    <td>2485</td>
+    <td>2795</td>
+    <td>1513</td>
+    <td>3722</td>
+    <td>3321</td>
+    <td>2936</td>
+    <td>1882</td>
+    <td>1771</td>
+    <td>1757</td>
   </tr>
 </table>
 
@@ -106,16 +178,6 @@ Oracle 64-bit JDK 1.8.0_74
 
 `data/graph.db` takes 402 MB.
 
-#### Neo4j Enterprise 2.2.7
-
-    wrapper.java.initmemory=2048
-    wrapper.java.maxmemory=4096
-    dbms.pagecache.memory=500m
-
-#### Neo4j Enterprise 2.3.2
-
-    wrapper.java.initmemory=512
-    wrapper.java.maxmemory=512
     dbms.pagecache.memory=500m
     
 Note that because of the removal of the object cache, Neo4j 2.3 needs (much) less memory. I did run the same benchmark
