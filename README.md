@@ -101,6 +101,10 @@ Oracle 64-bit JDK 1.8.0_74
     wrapper.java.initmemory=512
     wrapper.java.maxmemory=512
     dbms.pagecache.memory=500m
+    
+Note that because of the removal of the object cache, Neo4j 2.3 needs (much) less memory. I did run the same benchmark
+with init/max heap parameters of 1024/1024, 2048/2048 and 2048/4096, and it didn't change the performance of 2.3, which
+is why I kept the minimal configuration.
 
 Running with a JDK 7 or 8 gives similar results, as does using the G1 or CMS garbage collectors.
 
