@@ -21,6 +21,7 @@ import org.neo4j.graphdb.Transaction;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -38,9 +39,10 @@ public class TraversalResource {
     }
 
     @GET
-    public Response traverse() {
+    public Response traverse(@QueryParam("depthFirst") String depthFirstParameter) {
+        boolean depthFirst = depthFirstParameter != null;
         try (Transaction ignored = graphDb.beginTx()) {
-            int count = new TrueBNodesCounter(graphDb).count();
+            int count = new TrueBNodesCounter(graphDb).count(depthFirst);
             return Response.ok(String.valueOf(count) + "\n").build();
         }
     }

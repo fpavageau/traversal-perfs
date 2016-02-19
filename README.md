@@ -37,13 +37,19 @@ traversals between Neo4j 2.2 and 2.3, probably due to the simplification of the 
         
      The database needs to be emptied before a new tree can be generated.
         
-1. Warm-up the JVM
+1. Warm-up the JVM.
         
+        # Default breadth-first traversal mode
         ab -c 1 -n 100 localhost:7474/traversal-perfs/traverse > /dev/null 2>&1
+        # or explicit depth-first traversal mode
+        ab -c 1 -n 100 'localhost:7474/traversal-perfs/traverse?depthFirst=' > /dev/null 2>&1
 
-1. Measure the response time:
+1. Measure the response time.
 
+        # Default breadth-first traversal mode
         ab -c 1 -n 100 localhost:7474/traversal-perfs/traverse
+        # or explicit depth-first traversal mode
+        ab -c 1 -n 100 'localhost:7474/traversal-perfs/traverse?depthFirst='
 
 ## Traversal implementation
 

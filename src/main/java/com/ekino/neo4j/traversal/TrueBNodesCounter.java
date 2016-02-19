@@ -41,22 +41,26 @@ class TrueBNodesCounter {
         this.graphDb = graphDb;
     }
 
-    public int count() {
+    public int count(boolean depthFirst) {
         try (ResourceIterator<Node> roots = graphDb.findNodes(Labels.Root)) {
             if (roots.hasNext()) {
-                return count(roots.next());
+                return count(roots.next(), depthFirst);
             }
         }
         return -1;
     }
 
-    private int count(Node root) {
-        LOGGER.info("Traversing the whole tree");
+    private int count(Node root, boolean depthFirst) {
+        LOGGER.info("Traversing the whole tree ({})", depthFirst ? "depth-first" : "breadth-first");
         TraversalDescription td = graphDb.traversalDescription()
                 .uniqueness(Uniqueness.NONE)
-                .breadthFirst()
                 .evaluator(TrueBEvaluator.INSTANCE)
                 .expand(CustomPathExpander.INSTANCE);
+        if (depthFirst) {
+            td = td.depthFirst();
+        } else {
+            td = td.breadthFirst();
+        }
 
         int count = 0;
         for (Path ignored : td.traverse(root)) {
