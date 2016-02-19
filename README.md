@@ -48,7 +48,7 @@ traversals between Neo4j 2.2 and 2.3, probably due to the simplification of the 
 ## Traversal implementation
 
 The code only has 5 source files, and the most relevant part is 
-[`TrueBNodesCounter`](blob/master/src/main/java/com/ekino/neo4j/traversal/TrueBNodesCounter.java) which
+[`TrueBNodesCounter`](src/main/java/com/ekino/neo4j/traversal/TrueBNodesCounter.java) which
 implements a traversal using custom `Evaluator` and `PathExpander`, based on the core Neo4j API: `Node::hasLabel`,
 `Node::getProperty`, `Node::getRelationships`.
 
