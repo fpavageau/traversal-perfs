@@ -43,7 +43,7 @@ public class TraversalResource {
         boolean depthFirst = depthFirstParameter != null;
         try (Transaction ignored = graphDb.beginTx()) {
             int count = new TrueBNodesCounter(graphDb).count(depthFirst);
-            return Response.ok(String.valueOf(count) + "\n").build();
+            return Response.ok(count + "\n").build();
         }
     }
 }

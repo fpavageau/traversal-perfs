@@ -69,7 +69,7 @@ public class PopulateResource {
                 fanout = getParameter(fanoutParameter, DEFAULT_FANOUT);
 
         int created = populate(depth, fanout);
-        return Response.ok(String.valueOf(created) + "\n").build();
+        return Response.ok(created + "\n").build();
     }
 
     private static int getParameter(Integer parameter, int defaultValue) {
