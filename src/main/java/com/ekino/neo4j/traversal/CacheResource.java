@@ -15,7 +15,6 @@
  */
 package com.ekino.neo4j.traversal;
 
-import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.management.Cache;
 
 import javax.management.JMX;
@@ -25,7 +24,6 @@ import javax.management.ObjectName;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.lang.management.ManagementFactory;
 import java.util.Locale;
@@ -39,7 +37,7 @@ public class CacheResource {
     private final Cache nodeCache;
     private final Cache relationshipCache;
 
-    public CacheResource(@Context GraphDatabaseService graphDb) {
+    public CacheResource() {
         nodeCache = getCache("NodeCache");
         relationshipCache = getCache("RelationshipCache");
     }
