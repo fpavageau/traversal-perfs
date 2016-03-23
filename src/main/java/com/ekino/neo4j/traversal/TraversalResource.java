@@ -39,10 +39,12 @@ public class TraversalResource {
     }
 
     @GET
-    public Response traverse(@QueryParam("depthFirst") String depthFirstParameter) {
+    public Response traverse(@QueryParam("depthFirst") String depthFirstParameter,
+                             @QueryParam("cache") String cacheParameter) {
         boolean depthFirst = depthFirstParameter != null;
+        Neo4jOperations neo4jOperations = Neo4jOperations.get(cacheParameter);
         try (Transaction ignored = graphDb.beginTx()) {
-            int count = new TrueBNodesCounter(graphDb).count(depthFirst);
+            int count = new TrueBNodesCounter(graphDb, neo4jOperations).count(depthFirst);
             return Response.ok(count + "\n").build();
         }
     }

@@ -26,7 +26,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.lang.management.ManagementFactory;
-import java.util.Locale;
 
 /**
  * Resource to manage the object caches in Neo4j.
@@ -58,20 +57,14 @@ public class CacheResource {
     @GET
     @Path("/clear")
     public String clear() {
-        if (nodeCache == null) {
-            return "No cache\n";
+        if (nodeCache != null) {
+            nodeCache.clear();
         }
+        if (relationshipCache != null) {
+            relationshipCache.clear();
+        }
+        Neo4jOperations.clearCache();
 
-        long nHitCount = nodeCache.getHitCount();
-        long nTotal = nodeCache.getMissCount() + nHitCount;
-        long rHitCount = relationshipCache.getHitCount();
-        long rTotal = relationshipCache.getMissCount() + rHitCount;
-
-        nodeCache.clear();
-        relationshipCache.clear();
-
-        return String.format(Locale.ENGLISH, "Hit ratio (nodes) = %.6f\nHit ratio (relationships) = %.6f\n",
-                nTotal > 0 ? 1.0 * nHitCount / nTotal : Double.NaN,
-                rTotal > 0 ? 1.0 * rHitCount / rTotal : Double.NaN);
+        return "OK\n";
     }
 }

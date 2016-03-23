@@ -36,9 +36,11 @@ class TrueBNodesCounter {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrueBNodesCounter.class);
 
     private final GraphDatabaseService graphDb;
+    private final Neo4jOperations neo4jOperations;
 
-    public TrueBNodesCounter(GraphDatabaseService graphDb) {
+    public TrueBNodesCounter(GraphDatabaseService graphDb, Neo4jOperations neo4jOperations) {
         this.graphDb = graphDb;
+        this.neo4jOperations = neo4jOperations;
     }
 
     public int count(boolean depthFirst) {
@@ -54,8 +56,8 @@ class TrueBNodesCounter {
         LOGGER.info("Traversing the whole tree ({})", depthFirst ? "depth-first" : "breadth-first");
         TraversalDescription td = graphDb.traversalDescription()
                 .uniqueness(Uniqueness.NONE)
-                .evaluator(TrueBEvaluator.INSTANCE)
-                .expand(CustomPathExpander.INSTANCE);
+                .evaluator(new TrueBEvaluator(neo4jOperations))
+                .expand(new CustomPathExpander(neo4jOperations));
         if (depthFirst) {
             td = td.depthFirst();
         } else {
@@ -69,8 +71,12 @@ class TrueBNodesCounter {
         return count;
     }
 
-    private enum TrueBEvaluator implements Evaluator {
-        INSTANCE;
+    private static class TrueBEvaluator implements Evaluator {
+        private final Neo4jOperations neo4jOperations;
+
+        public TrueBEvaluator(Neo4jOperations neo4jOperations) {
+            this.neo4jOperations = neo4jOperations;
+        }
 
         @Override
         public Evaluation evaluate(Path path) {
@@ -78,8 +84,10 @@ class TrueBNodesCounter {
             return Evaluation.ofIncludes(includes(endNode));
         }
 
-        private static boolean includes(Node endNode) {
-            return endNode.hasLabel(Labels.B) && (Boolean) endNode.getProperty("value");
+        private boolean includes(Node endNode) {
+            String propName = "value";
+            return neo4jOperations.hasLabel(endNode, Labels.B) &&
+                    (Boolean) neo4jOperations.getProperty(endNode, propName);
         }
 
         @Override
@@ -88,15 +96,19 @@ class TrueBNodesCounter {
         }
     }
 
-    private enum CustomPathExpander implements PathExpander<Object> {
-        INSTANCE;
+    private class CustomPathExpander implements PathExpander<Object> {
+        private final Neo4jOperations neo4jOperations;
+
+        public CustomPathExpander(Neo4jOperations neo4jOperations) {
+            this.neo4jOperations = neo4jOperations;
+        }
 
         @Override
         public Iterable<Relationship> expand(Path path, BranchState<Object> state) {
             Node endNode = path.endNode();
-            if (endNode.hasLabel(Labels.A)) {
+            if (neo4jOperations.hasLabel(endNode, Labels.A)) {
                 return endNode.getRelationships(Direction.OUTGOING, RelationshipTypes.HAS_B);
-            } else if (endNode.hasLabel(Labels.B)) {
+            } else if (neo4jOperations.hasLabel(endNode, Labels.B)) {
                 return endNode.getRelationships(Direction.OUTGOING, RelationshipTypes.HAS_A);
             }
             return Collections.emptyList();

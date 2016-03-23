@@ -17,8 +17,23 @@ package com.ekino.neo4j.traversal;
 
 import org.neo4j.graphdb.Label;
 
+import java.util.HashMap;
+import java.util.Map;
+
 enum Labels implements Label {
     Root,
     A,
-    B
+    B;
+
+    private static final Map<String, Labels> byNameMap = new HashMap<>();
+
+    static {
+        for (Labels label : Labels.values()) {
+            byNameMap.put(label.name(), label);
+        }
+    }
+
+    public static Labels getByName(String name) {
+        return byNameMap.get(name);
+    }
 }

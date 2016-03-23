@@ -16,18 +16,63 @@
 
 export LC_ALL=C
 
-printf "Warming up"
-for i in $(seq 1 100); do
-    printf "."
-    curl -sS -o /dev/null localhost:7474/traversal-perfs/cache/clear
-    curl -sS -o /dev/null 'localhost:7474/traversal-perfs/traverse?depthFirst='
+declare warm_up=yes
+declare clear_cache=no
+declare query
+declare iterations=100
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        "--help")
+            printf "$0 [--help] [--no-warm-up] [--clear-cache] [--cache [cache1[,cache2[,...]]]] [-n iterations]\n"
+            printf "\t--cache        enable the named caches (label, property)\n"
+            printf "\t--clear-cache  clear the caches before each traversal\n"
+            printf "\t--help         this message\n"
+            printf "\t-n             set the number of iterations (default: 100)\n"
+            printf "\t--no-warm-up   do not warm up before measuring\n"
+            exit 1
+            ;;
+        "--no-warm-up")
+            warm_up=no
+            ;;
+        "--clear-cache")
+            clear_cache=yes
+            ;;
+        "--depth-first")
+            query+=${query:+&}depthFirst=
+            ;;
+        "--cache")
+            shift
+            query+=${query:+&}cache=$1
+            ;;
+        "-n")
+            shift
+            iterations=$1
+            ;;
+    esac
+    shift
 done
-echo
+
+query=${query:+?}$query
+
+if [ $warm_up == "yes" ]; then
+    printf "Warming up"
+    for i in $(seq 1 $iterations); do
+        printf "."
+        if [ $clear_cache == "yes" ]; then
+            curl -sS -o /dev/null localhost:7474/traversal-perfs/cache/clear
+        fi
+        curl -sS -o /dev/null localhost:7474/traversal-perfs/traverse$query
+    done
+    printf "\n"
+fi
 
 echo "Measuring"
-for i in $(seq 1 100); do
-    curl -sS -o /dev/null localhost:7474/traversal-perfs/cache/clear
-    curl -w '%{time_total}\n' -sS -o /dev/null 'localhost:7474/traversal-perfs/traverse?depthFirst='
+for i in $(seq 1 $iterations); do
+    if [ $clear_cache == "yes" ]; then
+        curl -sS -o /dev/null localhost:7474/traversal-perfs/cache/clear
+    fi
+    curl -w '%{time_total}\n' -sS -o /dev/null localhost:7474/traversal-perfs/traverse$query
 done |
     sort -n |
     awk -f quantiles.awk
