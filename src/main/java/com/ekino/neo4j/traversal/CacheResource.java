@@ -15,17 +15,10 @@
  */
 package com.ekino.neo4j.traversal;
 
-import org.neo4j.management.Cache;
-
-import javax.management.JMX;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.lang.management.ManagementFactory;
 
 /**
  * Resource to manage the object caches in Neo4j.
@@ -33,36 +26,16 @@ import java.lang.management.ManagementFactory;
 @Path("/cache")
 @Produces(MediaType.TEXT_PLAIN)
 public class CacheResource {
-    private final Cache nodeCache;
-    private final Cache relationshipCache;
+    private final CacheOperations cacheOperations;
 
     public CacheResource() {
-        nodeCache = getCache("NodeCache");
-        relationshipCache = getCache("RelationshipCache");
-    }
-
-    private static Cache getCache(String cacheType) {
-        try {
-            ObjectName objectName = new ObjectName("org.neo4j:instance=kernel#0,name=Cache,name0=" + cacheType);
-            MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-            if (mBeanServer.isRegistered(objectName)) {
-                return JMX.newMBeanProxy(mBeanServer, objectName, Cache.class);
-            }
-        } catch (MalformedObjectNameException e) {
-            // Shouldn't happen, return null anyway
-        }
-        return null;
+        cacheOperations = CacheOperations.create();
     }
 
     @GET
     @Path("/clear")
     public String clear() {
-        if (nodeCache != null) {
-            nodeCache.clear();
-        }
-        if (relationshipCache != null) {
-            relationshipCache.clear();
-        }
+        cacheOperations.clear();
         Neo4jOperations.clearCache();
 
         return "OK\n";
