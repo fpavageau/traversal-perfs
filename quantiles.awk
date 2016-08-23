@@ -20,9 +20,18 @@
 }
 
 END {
-  print "Mean\t" (sum / NR)
-  print "50%\t" vals[int(NR * .5)]
-  print "90%\t" vals[int(NR * .9)]
-  print "95%\t" vals[int(NR * .95)]
-  print "Max\t" vals[NR]
+  mean = (sum / NR)
+  q50 = vals[int(NR * .5)]
+  q90 = vals[int(NR * .9)]
+  q95 = vals[int(NR * .95)]
+  max = vals[NR]
+  if (one_line == "yes") {
+    print mean "\t" q50 "\t" q90 "\t" q95 "\t" max
+  } else {
+    print "Mean\t" mean
+    print "50%\t" q50
+    print "90%\t" q90
+    print "95%\t" q95
+    print "Max\t" max
+  }
 }

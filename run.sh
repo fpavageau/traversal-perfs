@@ -20,6 +20,7 @@ declare warm_up=yes
 declare clear_cache=no
 declare query
 declare iterations=100
+declare one_line=no
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -30,6 +31,7 @@ while [[ $# -gt 0 ]]; do
             printf "\t--help         this message\n"
             printf "\t-n             set the number of iterations (default: 100)\n"
             printf "\t--no-warm-up   do not warm up before measuring\n"
+            printf "\t--one-line     print the results on a single parseable line\n"
             exit 1
             ;;
         "--no-warm-up")
@@ -49,6 +51,9 @@ while [[ $# -gt 0 ]]; do
             shift
             iterations=$1
             ;;
+        "--one-line")
+            one_line=yes
+            ;;
     esac
     shift
 done
@@ -56,18 +61,18 @@ done
 query=${query:+?}$query
 
 if [ $warm_up == "yes" ]; then
-    printf "Warming up"
+    [ $one_line == "no" ] && printf "Warming up"
     for i in $(seq 1 $iterations); do
-        printf "."
+        [ $one_line == "no" ] && printf "."
         if [ $clear_cache == "yes" ]; then
             curl -sS -o /dev/null localhost:7474/traversal-perfs/cache/clear
         fi
         curl -sS -o /dev/null localhost:7474/traversal-perfs/traverse$query
     done
-    printf "\n"
+    [ $one_line == "no" ] && printf "\n"
 fi
 
-echo "Measuring"
+[ $one_line == "no" ] && echo "Measuring"
 for i in $(seq 1 $iterations); do
     if [ $clear_cache == "yes" ]; then
         curl -sS -o /dev/null localhost:7474/traversal-perfs/cache/clear
@@ -75,4 +80,4 @@ for i in $(seq 1 $iterations); do
     curl -w '%{time_total}\n' -sS -o /dev/null localhost:7474/traversal-perfs/traverse$query
 done |
     sort -n |
-    awk -f quantiles.awk
+    awk -v one_line=$one_line -f quantiles.awk
